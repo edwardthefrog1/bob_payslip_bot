@@ -20,33 +20,31 @@ def literal_eval_config(config_id):
             key_tmp.append(key)
     return {key_tmp[i]: data_tmp[i] for i in range(len(key_tmp))}
 
-def send_keys(login_dict, x_path_dict):
-    for key in x_path_dict.keys():
-        if x_path_dict.keys().index(key) != len(x_path_dict):
-            pass
-    
+
+def selenium_do_instructions(instructions_config_id, person_id):
+    instr_dict = literal_eval_config(instructions_config_id)
+    person_id_dict = literal_eval_config(person_id)
+    for i, key in enumerate(instr_dict.keys()):
+        if instr_dict[key][-1] == 'send_keys':
+            DRIVER_SAFARI.find_element_by_xpath(instr_dict[key][0])\
+                .send_keys(list(person_id_dict.values())[i])
+        if instr_dict[key][-1] == 'click':
+            DRIVER_SAFARI.find_element_by_xpath(instr_dict[key][0])\
+                .click()
 
 
 class bob_bot:
-    def __init__(self, person_id, xpaths_id='xero_x_paths'):
+    def __init__(self, person_id):
         self.person_id = person_id
-        self.x_paths_id = xpaths_id
 
     def login(self):
-        DRIVER_SAFARI.get(self.data_dict['url'])
-        send_keys(literal_eval_config(self.person_id),\
-            literal_eval_config(self.xpaths_id))
+        DRIVER_SAFARI.get(literal_eval_config(self.person_id)['url'])
+        selenium_do_instructions('login_instructions', self.person_id)
         
-        
-
-    
-
-
-
 
 def main():
     bob_bot_tom = bob_bot('tom')
-    #bob_bot_tom.login()
+    bob_bot_tom.login()
 
 
 if __name__ == "__main__":
