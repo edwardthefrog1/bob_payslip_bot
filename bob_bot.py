@@ -1,4 +1,5 @@
 from lib2to3.pgen2 import driver
+from re import X
 from pip import main
 from selenium import webdriver
 from main import CONFIG_PATH
@@ -19,16 +20,23 @@ def literal_eval_config(config_id):
             key_tmp.append(key)
     return {key_tmp[i]: data_tmp[i] for i in range(len(key_tmp))}
 
+def send_keys(login_dict, x_path_dict):
+    for key in x_path_dict.keys():
+        if x_path_dict.keys().index(key) != len(x_path_dict):
+            pass
+    
+
 
 class bob_bot:
     def __init__(self, person_id, xpaths_id='xero_x_paths'):
         self.person_id = person_id
         self.x_paths_id = xpaths_id
-        self.login_details_dict = literal_eval_config(self.person_id)
-        self.x_paths_dict = literal_eval_config(self.xpaths_id)
 
     def login(self):
         DRIVER_SAFARI.get(self.data_dict['url'])
+        send_keys(literal_eval_config(self.person_id),\
+            literal_eval_config(self.xpaths_id))
+        
         
 
     
