@@ -11,10 +11,8 @@ DRIVER_SAFARI = webdriver.Safari()
 class bob_bot:
     def __init__(self, person_id):
         self.person_id = person_id
-        self.data_dict
-
-    def get_data_dict(self):
         data_tmp, key_tmp = ([] for i in range(2))
+        print('Loading data from config')
         config = ConfigParser()
         config.read(CONFIG_PATH)
         config = dict(config.items(self.person_id))
@@ -22,7 +20,8 @@ class bob_bot:
             data_tmp.append(litev(config[key]))
             key_tmp.append(key)
         self.data_dict = {key_tmp[i]: data_tmp[i] for i in range(len(key_tmp))}
-
+        print(self.data_dict)
+        
     def login(self):
         DRIVER_SAFARI.get(self.data_dict['url'])
 
@@ -32,8 +31,7 @@ class bob_bot:
 
 
 def main():
-    bob_bot_tom = bob_bot('tom_xero')
-    bob_bot_tom.get_data_dict()
+    bob_bot_tom = bob_bot('tom')
     bob_bot_tom.login()
 
 
