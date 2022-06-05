@@ -7,6 +7,7 @@ from configparser import ConfigParser
 from ast import literal_eval as litev
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from time import sleep
 
 DRIVER_SAFARI = webdriver.Safari()
@@ -30,12 +31,11 @@ def selenium_do_instructions(instructions_config_id, person_id):
         DRIVER_SAFARI.implicitly_wait(10)
         if instr_dict[key][-1] == 'send_keys':
             print('sending key: {}'.format(instr_dict[key][0]))
-            DRIVER_SAFARI.find_element_by_xpath(instr_dict[key][0])\
+            DRIVER_SAFARI.find_element(By.XPATH, instr_dict[key][0])\
                 .send_keys(list(person_id_dict.values())[i])
         if instr_dict[key][-1] == 'click':
             print('click: {}'.format(instr_dict[key][0]))
-            DRIVER_SAFARI.find_element_by_xpath(instr_dict[key][0])\
-                .click()
+            DRIVER_SAFARI.find_element(By.XPATH, instr_dict[key][0]).click()
 
 
 class bob_bot:
