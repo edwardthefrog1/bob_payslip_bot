@@ -11,7 +11,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from time import sleep
 from authenticator import get_auth_code
-import pyotp
 
 print('Start bob bot with webdriver ? (y/n)')
 while(True):    
@@ -42,17 +41,34 @@ def write_to_config(key, param, data):
         config.write(configfile)
 
 def selenium_do_instructions(instructions_config_id, data_id):
+    sleep(5)
+    try:
+        DRIVER_SAFARI.switch_to().defaultContent()
+    except:
+        print('could not find default frame')
     instr_dict = literal_eval_config(instructions_config_id)
     data_id_dict = literal_eval_config(data_id)
     for i, key in enumerate(instr_dict.keys()):
-        if instr_dict[key][-1] == 'send_keys':
-            print('sending key: {}'.format(instr_dict[key][0]))
-            DRIVER_SAFARI.find_element(By.XPATH, instr_dict[key][0])\
-                .send_keys(list(data_id_dict.values())[i])
-        if instr_dict[key][-1] == 'click':
-            print('click: {}'.format(instr_dict[key][0]))
-            DRIVER_SAFARI.find_element(By.XPATH, instr_dict[key][0]).click()
 
+        if instr_dict[key][-1] == 'XPATH':
+            if instr_dict[key][1] == 'send_keys':
+                print('sending key: {}'.format(instr_dict[key][0]))
+                DRIVER_SAFARI.find_element(By.XPATH, \
+                    instr_dict[key][0]).send_keys(list(data_id_dict.values())[i])
+            if instr_dict[key][1] == 'click':
+                print('click: {}'.format(instr_dict[key][0]))
+                DRIVER_SAFARI.find_element(By.XPATH, \
+                    instr_dict[key][0]).click()
+
+        if instr_dict[key][-1] == 'CLASS_NAME':
+            if instr_dict[key][1] == 'send_keys':
+                print('sending key: {}'.format(instr_dict[key][0]))
+                DRIVER_SAFARI.find_element(By.CLASS_NAME, \
+                    instr_dict[key][0]).send_keys(list(data_id_dict.values())[i])
+            if instr_dict[key][1] == 'click':
+                print('click: {}'.format(instr_dict[key][0]))
+                DRIVER_SAFARI.find_element(By.CLASS_NAME, \
+                    instr_dict[key][0]).click()
 
 
 class bob_bot:
