@@ -86,7 +86,8 @@ class bob_bot:
         DRIVER_SAFARI.quit()
 
     def authenticate_bob(self):
-        auth_code = get_auth_code(literal_eval_config(self.person_id)['secret_key'])
+        auth_code = get_auth_code(literal_eval_config(self.person_id)\
+            ['secret_key'])
         write_to_config('auth_data', 'auth_code', auth_code)
         selenium_do_instructions('authenticate_instructions', 'auth_data')
         
