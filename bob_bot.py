@@ -5,9 +5,9 @@ from configparser import ConfigParser
 from ast import literal_eval as litev
 from selenium.webdriver.common.by import By
 from authenticator import get_auth_code
-from time import sleep
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from time import sleep
 
 
 def setup_run():
@@ -76,7 +76,8 @@ def write_to_config(key, param, data):
 
 def selenium_do_instructions(instructions_config_id, data_id, driver_safari):
     instr_dict = literal_eval_config(instructions_config_id)
-    data_id_dict = literal_eval_config(data_id)
+    if data_id != None:
+        data_id_dict = literal_eval_config(data_id)
     for i, key in enumerate(instr_dict.keys()):
         element = WebDriverWait(driver_safari, 10).until\
             (EC.presence_of_element_located((By.XPATH, instr_dict[key][0])))
@@ -106,6 +107,7 @@ def login_bob_bots(bob_bot_list):
         print('Logging in {} ...'.format(bob_bot_list[i]))
         user_s.login()
         user_s.authenticate_bob()
+    return bob_bot_list
 
 
 class bob_bot:
@@ -131,14 +133,28 @@ class bob_bot:
         write_to_config('auth_data', 'auth_code', auth_code)
         selenium_do_instructions('authenticate_instructions', 'auth_data', \
             self.driver_safari)
+        print('we got here')
+    
+    def get_profile_data(self):
+        selenium_do_instructions('get_profile_data_instructions', None,\
+             self.driver_safari)
+        pass
+    
+    def get_payslips_data(self):
+        pass
+
+    def get_leave_data(self):
+        pass
+
+    def get_timesheet_data(self):
+        pass
 
 
 
 def main():
     user_s_list, create_driver = setup_run()
-    login_bob_bots(create_bobs(user_s_list, create_driver))
-    #bob_bot_tom.close_safari()
-
+    bob_bot_list = login_bob_bots(create_bobs(user_s_list, create_driver))
+    bob_bot_list[0].get_profile_data()
 
 if __name__ == "__main__":
     main()
