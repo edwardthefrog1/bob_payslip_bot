@@ -1,9 +1,13 @@
+from lib2to3.pgen2 import driver
 from selenium import webdriver
 from main import CONFIG_PATH
 from configparser import ConfigParser
 from ast import literal_eval as litev
 from selenium.webdriver.common.by import By
 from authenticator import get_auth_code
+from time import sleep
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def setup_run():
@@ -32,9 +36,10 @@ def setup_run():
     while(True):    
         reply = input()
         if reply == 'y' or reply == 'Y':
-            driver_safari = webdriver.Safari()
+            create_driver = True
             break
         elif reply == 'n' or reply == 'N':
+            create_driver = False
             break
         else:
             print('invalid input, please answer with (y/n)')
@@ -47,7 +52,7 @@ def setup_run():
             quit()
         else:
             print('invalid input, please answer with (y/n)')
-    return user_s_list, driver_safari
+    return user_s_list, create_driver
 
 
 def literal_eval_config(config_id):
@@ -73,6 +78,9 @@ def selenium_do_instructions(instructions_config_id, data_id, driver_safari):
     instr_dict = literal_eval_config(instructions_config_id)
     data_id_dict = literal_eval_config(data_id)
     for i, key in enumerate(instr_dict.keys()):
+        element = WebDriverWait(driver_safari, 10).until\
+            (EC.presence_of_element_located((By.XPATH, instr_dict[key][0])))
+        print(element)
         if instr_dict[key][-1] == 'XPATH':
             if instr_dict[key][1] == 'send_keys':
                 print('sending key: {}'.format(instr_dict[key][0]))
@@ -82,20 +90,15 @@ def selenium_do_instructions(instructions_config_id, data_id, driver_safari):
                 print('click: {}'.format(instr_dict[key][0]))
                 driver_safari.find_element(By.XPATH, \
                     instr_dict[key][0]).click()
-        if instr_dict[key][-1] == 'CLASS_NAME':
-            if instr_dict[key][1] == 'send_keys':
-                print('sending key: {}'.format(instr_dict[key][0]))
-                driver_safari.find_element(By.CLASS_NAME, \
-                    instr_dict[key][0]).send_keys(list(data_id_dict.values())[i])
-            if instr_dict[key][1] == 'click':
-                print('click: {}'.format(instr_dict[key][0]))
-                driver_safari.find_element(By.CLASS_NAME, \
-                    instr_dict[key][0]).click()
 
-def create_bobs(users, driver_safari):
+def create_bobs(users, create_driver):
     bob_bot_list = []
-    for i, user_s in enumerate(users):
-        bob_bot_list.append(bob_bot(user_s, driver_safari))
+    if create_driver == True:
+        for i, user_s in enumerate(users):
+            bob_bot_list.append(bob_bot(user_s, webdriver.Safari()))
+    else:
+        print('not creating bots: no webdriver')
+        quit()
     return bob_bot_list
 
 def login_bob_bots(bob_bot_list):
@@ -132,9 +135,8 @@ class bob_bot:
 
 
 def main():
-    users, driver_safari = setup_run()
-    bob_bot_list =  create_bobs(users, driver_safari)
-    login_bob_bots(bob_bot_list)
+    user_s_list, create_driver = setup_run()
+    login_bob_bots(create_bobs(user_s_list, create_driver))
     #bob_bot_tom.close_safari()
 
 
